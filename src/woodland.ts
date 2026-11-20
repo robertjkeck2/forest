@@ -270,9 +270,9 @@ class Canopy {
     }
 
     if (this.leafCount++ % 5 !== 0) {
-      // A four-face solid keeps a readable folded profile in the distant crowns.
+      // Distant leaves keep their curved silhouette using two faces.
       const [rimA, , rimB] = rings[this.detailed ? 1 : 0]
-      this.farIndices.push(root, rimA, rimB, rimA, tip, rimB, root, tip, rimA, root, rimB, tip)
+      this.farIndices.push(root, rimA, rimB, rimA, tip, rimB)
     }
   }
 
@@ -332,6 +332,7 @@ function treeShape(index: number, barkHeight: BarkHeight) {
   const nearTrunk = stemGeometry(trunkCenters, trunkWidths, 56, profile, { sample: barkHeight, step: .115, depth: .23 })
   const farTrunk = stemGeometry(trunkCenters, trunkWidths, 24, profile, { sample: barkHeight, step: .46, depth: .11 })
   const stems: BufferGeometry[] = []
+  const forks: BufferGeometry[] = []
   const twigs: BufferGeometry[] = []
   const crown = new Canopy(hero)
   let birdBranch: Vector3 | undefined
@@ -374,7 +375,7 @@ function treeShape(index: number, barkHeight: BarkHeight) {
       const end = origin.clone().addScaledVector(out, span * treeRange(.15, .36))
         .addScaledVector(side, sign * span * treeRange(.23, .49)).addScaledVector(up, treeRange(.16, .72))
       const fork = origin.clone().lerp(end, .53).addScaledVector(up, -.09)
-      stems.push(woodyStem([origin, fork, end], [width * .38, width * .21, .0035], 5))
+      forks.push(woodyStem([origin, fork, end], [width * .38, width * .21, .0035], 5))
 
       for (let k = 0; k < 3; k++) {
         const branchlet = fork.clone().lerp(end, k * .46)
@@ -438,10 +439,10 @@ function treeShape(index: number, barkHeight: BarkHeight) {
   }
 
   const timber = {
-    near: mergeGeometries([nearTrunk, ...stems, ...twigs]),
+    near: mergeGeometries([nearTrunk, ...stems, ...forks, ...twigs]),
     far: mergeGeometries([farTrunk, ...stems]),
   }
-  for (const geometry of [nearTrunk, farTrunk, ...stems, ...twigs]) geometry.dispose()
+  for (const geometry of [nearTrunk, farTrunk, ...stems, ...forks, ...twigs]) geometry.dispose()
   return { timber, canopy: crown.geometry(), birdBranch }
 }
 

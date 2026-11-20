@@ -26,7 +26,6 @@ async function start() {
     antialias: true,
     forceWebGL: new URLSearchParams(location.search).has('webgl'),
   })
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5))
   renderer.shadowMap.enabled = true
   renderer.toneMapping = ACESFilmicToneMapping
   renderer.toneMappingExposure = 1.2
@@ -78,6 +77,10 @@ async function start() {
   sun.position.set(12, 22, -12)
   sun.target.position.set(1, 0, -4)
   sun.castShadow = true
+  // The sun and its major casters are stationary. Keep the canopy shadow
+  // stable while the leaves and small wildlife animate in the main view.
+  sun.shadow.autoUpdate = false
+  sun.shadow.needsUpdate = true
   const shadowResolution = window.matchMedia('(pointer: coarse)').matches ? 2048 : 3072
   sun.shadow.mapSize.set(shadowResolution, shadowResolution)
   sun.shadow.camera.left = sun.shadow.camera.bottom = -19
@@ -155,6 +158,8 @@ async function start() {
     camera.aspect = width / Math.max(1, height)
     camera.fov = camera.aspect < 1 ? 64 : 51
     camera.updateProjectionMatrix()
+    const pixelRatio = Math.sqrt(1_650_000 / Math.max(1, width * height))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25, pixelRatio))
     renderer.setSize(width, height, false)
   }
   new ResizeObserver(resize).observe(viewport)

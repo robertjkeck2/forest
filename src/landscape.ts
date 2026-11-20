@@ -155,7 +155,7 @@ export function makeCreek() {
     depthWrite: false,
   })
   const reflection = reflector({
-    resolutionScale: .58, bounces: false, generateMipmaps: true, samples: 4,
+    resolutionScale: .42, bounces: false, generateMipmaps: true,
   })
   const x = positionWorld.x
   const z = positionWorld.z
@@ -169,7 +169,7 @@ export function makeCreek() {
   const ripples = wideWave.sin().mul(wideWeight).mul(.00125).add(crossWave.sin().mul(crossWeight).mul(.0004))
   const drift = wideWave.cos().mul(wideWeight).mul(.00057).add(crossWave.cos().mul(crossWeight).mul(.00062))
   const viewY = cameraPosition.sub(positionWorld).normalize().y.abs()
-  const reflectionLod = mix(2.7, 1.65, smoothstep(.12, .62, viewY))
+  const reflectionLod = mix(2.25, 1.2, smoothstep(.12, .62, viewY))
   const reflected = reflection.sample(screenUV.flipX().add(vec2(drift, ripples))).level(reflectionLod).rgb
   const brightness = reflected.dot(vec3(.2126, .7152, .0722))
   const mirrored = reflected.div(brightness.sub(.52).max(0).mul(.52).add(1))
