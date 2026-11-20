@@ -209,13 +209,26 @@ async function start() {
       renderer.render(scene, camera)
       if (firstFrame) {
         firstFrame = false
-        status.hidden = true
+        void finishLoading()
       }
     } catch (error) {
       renderer.setAnimationLoop(null)
       showError(error)
     }
   })
+}
+
+async function finishLoading() {
+  const animations = status.getAnimations({ subtree: true })
+  for (const { effect } of animations) {
+    if (!effect) continue
+    // Let each looping animation end at the end of its current iteration.
+    const { currentIteration } = effect.getComputedTiming()
+    effect.updateTiming({ iterations: (currentIteration ?? 0) + 1 })
+  }
+  // Reduced motion can cancel a running CSS animation before it finishes.
+  await Promise.allSettled(animations.map(animation => animation.finished))
+  if (status.dataset.state !== 'error') status.hidden = true
 }
 
 function showError(error: unknown) {
