@@ -28,6 +28,10 @@ body { margin: 0; }
   background: radial-gradient(ellipse at center, #283525 0%, #171e17 65%);
 }
 #status:not([hidden]) { display: grid; }
+#status[data-state="revealing"] {
+  animation: woodland-reveal .55s ease-out both;
+  pointer-events: none;
+}
 #status[data-state="error"] .seedling { display: none; }
 #status-message { max-width: 32rem; margin: 0; }
 #status-message:empty { display: none; }
@@ -57,7 +61,7 @@ body { margin: 0; }
   border-radius: .5rem;
   background: linear-gradient(#b5c876, #738d52);
   transform-origin: bottom;
-  animation: stem-grow 3s ease-in-out infinite;
+  animation: stem-grow 1.8s ease-in-out both;
 }
 .seedling-leaf {
   position: absolute;
@@ -65,7 +69,7 @@ body { margin: 0; }
   height: 1.5rem;
   background: linear-gradient(145deg, #b8cc7a, #65874a);
   box-shadow: inset 0 -.17rem rgb(35 62 34 / .22);
-  animation: leaf-grow 3s ease-in-out infinite;
+  animation: leaf-grow 1.8s ease-in-out both;
 }
 .seedling-leaf-left {
   right: .23rem;
@@ -82,14 +86,17 @@ body { margin: 0; }
   rotate: -21deg;
 }
 @keyframes stem-grow {
-  0%, 8% { scale: 1 .07; }
-  58%, 86% { scale: 1 1; }
-  100% { scale: 1 .07; }
+  0%, 12% { scale: 1 .07; }
+  100% { scale: 1 1; }
 }
 @keyframes leaf-grow {
-  0%, 28%, 100% { scale: 0; }
-  60%, 86% { scale: 1; }
+  0%, 45% { scale: 0; }
+  100% { scale: 1; }
+}
+@keyframes woodland-reveal {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .seedling-stem, .seedling-leaf { animation: none; }
+  .seedling-stem, .seedling-leaf, #status[data-state="revealing"] { animation: none; }
 }
