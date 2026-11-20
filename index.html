@@ -12,7 +12,15 @@
       <p id="path-instructions" hidden>Scroll down to follow the woodland path and up to go back.</p>
       <div id="scene">
         <div id="viewport" role="img" aria-label="A woodland path beside a creek"></div>
-        <p id="status" role="status">Entering the woodland…</p>
+        <div id="status" role="status">
+          <span class="seedling" aria-hidden="true">
+            <span class="seedling-stem">
+              <span class="seedling-leaf seedling-leaf-left"></span>
+              <span class="seedling-leaf seedling-leaf-right"></span>
+            </span>
+          </span>
+          <p id="status-message">Entering the woodland…</p>
+        </div>
       </div>
     </main>
     <script type="module" src="/src/main.ts"></script>

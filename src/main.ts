@@ -6,6 +6,7 @@ import {
 import { float, Fn, mix, smoothstep, texture as sampleTexture, vec2 } from 'three/tsl'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js'
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js'
 import {
   creekCenter, elapsed, groundHeight, makeCreek, makeGround, motionAmount, pathCenter,
 } from './landscape'
@@ -17,7 +18,8 @@ import './style.css'
 
 const experience = document.querySelector<HTMLElement>('#experience')!
 const viewport = document.querySelector<HTMLDivElement>('#viewport')!
-const status = document.querySelector<HTMLParagraphElement>('#status')!
+const status = document.querySelector<HTMLDivElement>('#status')!
+const statusMessage = document.querySelector<HTMLParagraphElement>('#status-message')!
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
 const assets = import.meta.env.BASE_URL + 'assets/'
 
@@ -31,7 +33,7 @@ async function start() {
   renderer.toneMappingExposure = 1.2
 
   const texture = new TextureLoader()
-  const model = new GLTFLoader()
+  const model = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
   const hdr = new HDRLoader()
   const [
     ground, groundNormal, groundArm, mud, mudNormal, mudArm,
@@ -50,15 +52,15 @@ async function start() {
     texture.loadAsync(assets + 'bark_brown_02-height.jpg'),
     texture.loadAsync(assets + 'rock_boulder_dry-color.jpg'),
     texture.loadAsync(assets + 'rock_boulder_dry-normal.jpg'),
-    texture.loadAsync(assets + 'fern_02/alpha.jpg'),
-    model.loadAsync(assets + 'fern_02/fern_02_1k.gltf'),
-    model.loadAsync(assets + 'dead_tree_trunk/dead_tree_trunk_1k.gltf'),
+    texture.loadAsync(assets + 'fern_02/alpha.webp'),
+    model.loadAsync(assets + 'fern_02/fern_02.meshopt.gltf'),
+    model.loadAsync(assets + 'dead_tree_trunk/dead_tree_trunk.meshopt.gltf'),
     hdr.loadAsync(assets + 'woodland.hdr'),
-    model.loadAsync(assets + 'rock_moss_set_01/rock_moss_set_01_1k.gltf'),
-    texture.loadAsync(assets + 'canopy/leaf-color.jpg'),
-    texture.loadAsync(assets + 'canopy/leaf-alpha.jpg'),
+    model.loadAsync(assets + 'rock_moss_set_01/rock_moss_set_01.meshopt.gltf'),
+    texture.loadAsync(assets + 'canopy/leaf-color.webp'),
+    texture.loadAsync(assets + 'canopy/leaf-alpha.webp'),
     texture.loadAsync(assets + 'canopy/leaf-normal.jpg'),
-    hdr.loadAsync(assets + 'daylight-sky.hdr'),
+    hdr.loadAsync(assets + 'daylight-sky-1k.hdr'),
     renderer.init(),
   ])
 
@@ -218,8 +220,9 @@ async function start() {
 
 function showError(error: unknown) {
   console.error(error)
+  status.dataset.state = 'error'
+  statusMessage.textContent = 'The woodland couldn’t be rendered. Try reloading in a browser with WebGL 2 or WebGPU.'
   status.hidden = false
-  status.textContent = 'The woodland couldn’t be rendered. Try reloading in a browser with WebGL 2 or WebGPU.'
 }
 
 start().catch(showError)
